@@ -132,18 +132,60 @@
 
 })(jQuery);
 
+function loadStatisticGitHub(repos_url){
+	var xmlhttp = new XMLHttpRequest();
+	var url = repos_url;
+
+	xmlhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myArr = JSON.parse(this.responseText);
+			processStaticsRepos(myArr);
+		}
+	};
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
+}
+
 function populateGitHubStatus(gitArray){
 	var total_projetos  = gitArray['public_repos'];
 	var gists_publicos 	= gitArray['public_gists'];
 	var seguidores 		= gitArray['followers'];
 	var seguindo 		= gitArray['following'];
+	var repos_url 		= gitArray['repos_url'];
 
 	$('#total_projetos').text(total_projetos);
 	$('#total_gists').text(gists_publicos);
 	$('#seguidores_git').text(seguidores);
 	$('#seguindo_git').text(seguindo);
 
+	if(repos_url != ''){
+		loadStatisticGitHub(repos_url);
+	}
+
 }
+
+function processStaticsRepos(array_repos_git){
+	if (typeof array_repos_git !== 'undefined' && array_repos_git.length > 0) {
+		var total_repos 		= array_repos_git.length;
+		var tecnologias_repo 	= [];
+
+		array_repos_git.forEach(function(repo) {
+			console.log(repo.name);
+			if(!tecnologias_repo.includes(repo.language)){
+				console.log(repo.language);
+				tecnologias_repo.push(repo.language); 
+			}
+		});
+
+		console.log(total_repos);
+		console.log(tecnologias_repo);
+	}else{
+		console.log('Nenhum dado para exibir!');
+	}
+}
+
+
+
 
 function submitToAPI(e) {
        e.preventDefault();
