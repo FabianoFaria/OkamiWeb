@@ -165,27 +165,86 @@ function populateGitHubStatus(gitArray){
 }
 
 function processStaticsRepos(array_repos_git){
-	if (typeof array_repos_git !== 'undefined' && array_repos_git.length > 0) {
-		var total_repos 		= array_repos_git.length;
-		var tecnologias_repo 	= [];
 
+	// Com o array de repositorios, e efetuado uma discriminação por linguagens de pogramação e uma contagem de total
+	var tecnologias_repo 	= [];
+	var tecnologias_sort 	= [];
+
+	if (typeof array_repos_git !== 'undefined' && array_repos_git.length > 0) {
 		array_repos_git.forEach(function(repo) {
-			console.log(repo.name);
-			if(!tecnologias_repo.includes(repo.language)){
-				console.log(repo.language);
-				tecnologias_repo.push(repo.language); 
+			const index = tecnologias_repo.findIndex((x) => x.lang === repo.language);
+			if (index > -1) {
+				var temp_repo = tecnologias_repo.find(y => y.lang === repo.language);
+				tecnologias_repo.splice(index, 1);
+				tecnologias_repo.push({'lang' : repo.language, 'total' : temp_repo.total + 1});
+			}else{
+				tecnologias_repo.push({'lang' : repo.language, 'total' : 1});
 			}
 		});
-
-		console.log(total_repos);
-		console.log(tecnologias_repo);
 	}else{
 		console.log('Nenhum dado para exibir!');
 	}
+
+	//Prepara as estatisticas na página
+
+	if(tecnologias_repo.length > 0){
+		tecnologias_sort = ordernarTecnologiasPopulares(tecnologias_repo);
+
+		if(tecnologias_sort[0]){
+			console.log(tecnologias_sort[0]);
+			var primeira = (tecnologias_sort[0].total * 100 ) / array_repos_git.length;
+			$('#primeiro_text').text(tecnologias_sort[0].lang);
+			$('#primeiro_porce').text(primeira.toFixed(0)+"%");
+			document.getElementById("primeiro_tec").style.width = primeira.toFixed(0)+"%"; 
+		}
+
+		if(tecnologias_sort[1]){
+			console.log(tecnologias_sort[1]);
+			var segunda = (tecnologias_sort[1].total * 100 ) / array_repos_git.length;
+			$('#segundo_text').text(tecnologias_sort[1].lang);
+			$('#segundo_porce').text(segunda.toFixed(0)+"%");
+			document.getElementById("segunda_tec").style.width = segunda.toFixed(0)+"%"; 
+		}
+
+		if(tecnologias_sort[2]){
+			console.log(tecnologias_sort[2]);
+			var terceira = (tecnologias_sort[2].total * 100 ) / array_repos_git.length;
+			$('#terceiro_text').text(tecnologias_sort[2].lang);
+			$('#terceiro_porce').text(terceira.toFixed(0)+"%");
+			document.getElementById("terceiro_tec").style.width = terceira.toFixed(0)+"%"; 
+		}
+
+		if(tecnologias_sort[4]){
+			console.log(tecnologias_sort[4]);
+			var quarta = (tecnologias_sort[4].total * 100 ) / array_repos_git.length;
+			$('#quarto_text').text(tecnologias_sort[4].lang);
+			$('#quarto_porce').text(quarta.toFixed(0)+"%");
+			document.getElementById("quarto_tec").style.width = quarta.toFixed(0)+"%"; 
+		}
+
+
+	}else{
+		console.log(tecnologias_sort);
+	}
+	
 }
 
 
+function ordernarTecnologiasPopulares(array_tecnologias){
 
+	// Apenas efetua um sort na lista de tecnologias
+
+	array_tecnologias.sort((a, b) => (a.total < b.total) ? 1 : (a.total === b.total) ? ((a.lang < b.lang) ? 1 : -1) : -1 );
+
+	return array_tecnologias;
+
+}
+
+function calcularPorcentagemTecnologia(total_tec, total_geral){
+	var porcentagem = 0;
+
+
+}
 
 function submitToAPI(e) {
        e.preventDefault();
